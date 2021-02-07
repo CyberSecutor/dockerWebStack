@@ -26,7 +26,7 @@ x-custom:
 services:
 
   console:
-    build: "./console/${PHP_VERSION}/"
+    build: "console/${PHP_VERSION}/"
     user: "${CUID}:${CGID}"
     links:
       - db
@@ -57,7 +57,7 @@ services:
       - db-data:/var/lib/mysql:rw
 
   nginx-php-fpm:
-    build: ./nginx-php-fpm/
+    build: nginx-php-fpm
     networks:
       - backend
     links:
@@ -76,7 +76,7 @@ services:
       - ./nginx-dev.conf:/etc/nginx/app.conf:ro
 
   nginx-ssl-proxy:
-    build: ./nginx-ssl-proxy/
+    build: nginx-ssl-proxy
     networks:
       - backend
     links:
@@ -90,7 +90,7 @@ services:
     working_dir: "${PWD}"
 
   php-fpm:
-    build: ./php-fpm/${PHP_VERSION}
+    build: php-fpm/${PHP_VERSION}
     user: "${CUID}:${CGID}"
     networks:
       - backend

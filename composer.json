@@ -1,0 +1,14 @@
+{
+    "name": "cybersecutor/docker-web-stack",
+    "description": "Docker web stack consisting of Nginx , PHP-fpm, MySQL and Redis",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Remko Silvis",
+            "email": "remko@secutor.nl"
+        }
+    ],
+    "require": {},
+    "bin": ["bin/dev"]
+}
