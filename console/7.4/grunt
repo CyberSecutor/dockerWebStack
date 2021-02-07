@@ -1,0 +1,9 @@
+#!/bin/sh
+BIN_GRUNT="$(pwd)/node_modules/grunt/bin/grunt"
+
+if [ ! -f "${BIN_GRUNT}" ]; then
+  echo "Grunt not found. Please make sure this is executed from the folder where node_modules is located."
+  exit 1;
+fi
+
+"${BIN_GRUNT}" "$@"

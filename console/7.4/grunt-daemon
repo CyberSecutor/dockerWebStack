@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+GRUNT_LOG="${PWD}/var/log/grunt-watch.log"
+
+npm install >> "${GRUNT_LOG}"
+
+grunt exec --force >> "${GRUNT_LOG}"
+grunt less --force >> "${GRUNT_LOG}"
+grunt watch >> "${GRUNT_LOG}"

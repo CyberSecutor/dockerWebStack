@@ -1,0 +1,28 @@
+server {
+  listen 80 default_server;
+  server_name _;
+  return 301 https://${DOLLAR}host${DOLLAR}request_uri;
+}
+server {
+  listen 443 ssl default_server;
+  ssl_certificate /etc/nginx/ssl/certificate.crt;
+  ssl_certificate_key /etc/nginx/ssl/certificate.key;
+
+  location / {
+    proxy_set_header Host ${DOLLAR}http_host;
+    proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto: https;
+    proxy_set_header X-NginX-Proxy true;
+    proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+
+    proxy_pass http://${PROXY_HOST}:${PROXY_PORT};
+    proxy_redirect off;
+    proxy_buffering off;
+
+    proxy_buffer_size          128k;
+    proxy_buffers              1024 4k;
+    proxy_busy_buffers_size    256k;
+    proxy_connect_timeout      600s;
+    proxy_read_timeout         600s;
+  }
+}

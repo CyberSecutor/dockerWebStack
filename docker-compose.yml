@@ -1,0 +1,110 @@
+# vim: ai:ts=2:sw=2:et
+version: "3.4"
+networks:
+  backend:
+volumes:
+  db-data:
+
+x-custom:
+  environment: &env-vars
+    # Environment settings
+    - COMPOSER_MEMORY_LIMIT=-1
+    - "HOME=${CHOME}"
+    - HTTPS=on
+    - SSH_AUTH_SOCK
+    - XDEBUG_CONFIG
+    # Database settings
+    - DB_HOST
+    - DB_USER
+    - DB_PASS
+    - DB_NAME
+    - MYSQL_PORT
+    # URL settings
+    - CONFIG__DEFAULT__WEB__UNSECURE__BASE_URL
+    - CONFIG__DEFAULT__WEB__SECURE__BASE_URL
+
+services:
+
+  console:
+    build: "./console/${PHP_VERSION}/"
+    user: "${CUID}:${CGID}"
+    links:
+      - db
+      - redis
+    networks:
+      - backend
+    environment: *env-vars
+    extra_hosts:
+      - "${DNS_NAME}:${HOST_IP}"
+    working_dir: "${PWD}"
+    volumes:
+      - "${HOME}:${CHOME}"
+      - "${PWD}:${PWD}"
+      - "${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}"
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+
+  db:
+    image: mysql:8
+    networks:
+      - backend
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD
+    volumes:
+      - db-data:/var/lib/mysql:rw
+
+  nginx-php-fpm:
+    build: ./nginx-php-fpm/
+    networks:
+      - backend
+    links:
+      - php-fpm
+    working_dir: "${PWD}"
+    environment:
+      - "APP_ROOT=${APP_ROOT}"
+      - PHP_FPM_HOST
+      - PHP_FPM_PORT
+    extra_hosts:
+      - "${DNS_NAME}:${HOST_IP}"
+    volumes:
+      - "${PWD}:${PWD}:ro"
+      - ./nginx-map-dev.conf:/etc/nginx/conf.d/map.conf:ro
+      - ./nginx-dev.conf:/etc/nginx/app.conf:ro
+
+  nginx-ssl-proxy:
+    build: ./nginx-ssl-proxy/
+    networks:
+      - backend
+    links:
+      - nginx-php-fpm
+    ports:
+      - "${WEB_PORT_HTTP}:80"
+      - "${WEB_PORT_HTTPS}:443"
+    environment:
+      - PROXY_HOST
+      - PROXY_PORT
+    working_dir: "${PWD}"
+
+  php-fpm:
+    build: ./php-fpm/${PHP_VERSION}
+    user: "${CUID}:${CGID}"
+    networks:
+      - backend
+    links:
+      - db
+      - redis
+    environment: *env-vars
+    working_dir: "${PWD}"
+    volumes:
+      - "${PWD}:${PWD}:rw"
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+
+  redis:
+    image: redis:5.0-alpine
+    networks:
+      - backend

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+BIN_MYSQL="mysql --host=${DB_HOST} --port=${MYSQL_PORT} --user=${DB_USER} --password=${DB_PASS}"
+
+echo "Ensuring database server is up ..."
+wait-for "${DB_HOST}:${MYSQL_PORT}" --timeout=30 -- echo "Database server is up"
+
+if [[ $(${BIN_MYSQL} --execute="show schemas" 2> /dev/null | grep -c "${DB_NAME}") -eq 0 ]]; then
+  echo "Creating database ${DB_NAME} ..."
+  ${BIN_MYSQL} --execute="create schema ${DB_NAME}"
+  echo "Database created"
+
+  if [[ -n "$URL_DB" ]]; then
+    DB_FILE=$(basename "${URL_DB}")
+    echo "Downloading database ..."
+    if echo ${URL_DB} | grep -ce '^gs://' > /dev/null; then
+      gsutil cp "${URL_DB}" "/tmp/${DB_FILE}"
+    else
+      scp "${URL_DB}" "/tmp/${DB_FILE}"
+    fi
+    echo "Database downloaded"
+    echo "Installing database ..."
+    pv "/tmp/${DB_FILE}" | ${BIN_MYSQL} --database="${DB_NAME}"
+    rm "/tmp/${DB_FILE}"
+    echo "Database installed"
+  else
+    echo "No database data found, database not installed"
+  fi
+fi
+
+if [[ -n "$URL_MEDIA" && ! -f pub/media/.gcloud-download ]]; then
+  echo "Downloading media ..."
+  MEDIA_FILE=$(basename "${URL_MEDIA}")
+  if echo ${URL_MEDIA} | grep -ce '^gs://' > /dev/null; then
+    gsutil cp "${URL_MEDIA}" "/tmp/${MEDIA_FILE}"
+  else
+    scp "${URL_MEDIA}" "/tmp/${MEDIA_FILE}"
+  fi
+  echo "Downloaded media"
+  echo "Installing media ..."
+  tar xzf "/tmp/${MEDIA_FILE}"
+  mkdir -p pub/media
+  touch pub/media/.gcloud-download
+  rm "/tmp/${MEDIA_FILE}"
+  echo "Media installed"
+fi
