@@ -242,12 +242,8 @@ run() {
     }
 
     init() {
-      echo "Initialize a project type for development."
-      echo "Usage: $0 init [-f|--force] <project-type>"
-      echo "Available project types: "
-      for type in "${APP_SELF_PATH}"/templates/*; do
-        echo "- $(basename "${type}")"
-      done
+      echo "Initialize a project for use with the docker stack."
+      echo "Usage: $0 init [-f|--force]"
       return 0
     }
 
@@ -318,24 +314,18 @@ run() {
   # shellcheck disable=SC2120
   init() {
     local force=0
-    local type=""
     for option in "$@"; do
       case "$option" in
         -f|--force)
           force=1
           ;;
-        *)
-          if [ "$type" == "" ]; then
-            type="$option"
-          fi
-          ;;
       esac
     done
 
     if [ ! -e "${APP_PROJECT_PATH}/docker-compose.yml" ] && [ ! -e "${APP_PROJECT_PATH}/docker-compose.yaml" ] || [ "$force" == "1" ]; then
-      cp -prf "${APP_SELF_PATH}"/templates/"${type}"/* "${APP_PROJECT_PATH}"
-      cp -prf "${APP_SELF_PATH}"/templates/"${type}"/.[!.]* "${APP_PROJECT_PATH}"
-      echo "Initialized $type project."
+      cp -prf "${APP_SELF_PATH}"/project-config/* "${APP_PROJECT_PATH}"
+      cp -prf "${APP_SELF_PATH}"/project-config/.[!.]* "${APP_PROJECT_PATH}"
+      echo "Initialized project."
       return $?
     elif [ -e "${APP_PROJECT_PATH}/docker-compose.yml" ] || [ -e "${APP_PROJECT_PATH}/docker-compose.yaml" ]; then
       echo "Warning: Project already initialized. Use --force to re-initialize the project"
