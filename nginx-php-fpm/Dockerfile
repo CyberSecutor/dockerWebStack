@@ -1,6 +1,7 @@
 FROM nginx:alpine
 
 ENV APP_ROOT=/var/www/html
+ENV APP_ROOT_PUBLIC=/var/www/html/public
 ENV PHP_FPM_HOST=php-fpm
 ENV PHP_FPM_PORT=9000
 

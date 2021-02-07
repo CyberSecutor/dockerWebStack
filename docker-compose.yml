@@ -65,6 +65,7 @@ services:
     working_dir: "${PWD}"
     environment:
       - "APP_ROOT=${APP_ROOT}"
+      - "APP_ROOT_PUBLIC=${APP_ROOT_PUBLIC}"
       - PHP_FPM_HOST
       - PHP_FPM_PORT
     extra_hosts:

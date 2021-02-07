@@ -6,6 +6,7 @@ server {
   listen 80 default_server;
   server_name _;
   set ${DOLLAR}APP_ROOT ${APP_ROOT};
+  set ${DOLLAR}APP_ROOT_PUBLIC ${APP_ROOT_PUBLIC};
   index index.php;
   include /etc/nginx/app.conf;
 }
