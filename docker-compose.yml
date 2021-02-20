@@ -1,0 +1,31 @@
+# vim: ai:ts=2:sw=2:et
+version: "3.4"
+networks:
+  backend:
+volumes:
+  db-data:
+
+x-custom:
+  environment: &env-vars
+    # Environment settings
+    - COMPOSER_MEMORY_LIMIT=-1
+    - "HOME=${CHOME}"
+    - HTTPS=on
+    - SSH_AUTH_SOCK
+    - XDEBUG_CONFIG
+
+services:
+  console:
+    build: src/console/${PHP_VERSION}
+    user: "${CUID}:${CGID}"
+    networks:
+      - backend
+    environment: *env-vars
+    working_dir: "${PWD}"
+    volumes:
+      - "${HOME}:${CHOME}"
+      - "${PWD}:${PWD}"
+      - "${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}"
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro

@@ -19,9 +19,6 @@ x-custom:
     - DB_PASS
     - DB_NAME
     - MYSQL_PORT
-    # URL settings
-    - CONFIG__DEFAULT__WEB__UNSECURE__BASE_URL
-    - CONFIG__DEFAULT__WEB__SECURE__BASE_URL
 
 services:
 
