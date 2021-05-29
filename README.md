@@ -5,11 +5,29 @@ This tool allows for loading of environment variables similar to
 environment variable this way should help with a more consistent development
 process.
 
+## Services available in this stack  
+- Console: this can be used to execute CLI commands on the stack
+- php-fpm: container for running PHP processes
+- nginx: nginx service connected with the php-fpm service
+- elasticsearch: an elasticsearch ELK stack using port 5602 for Kibana
+
+To disable one of these services disable it in the docker-compose.yml for your project.
+
 # Installation
 
-If you don't have composer and/or installed you can check out this repo and use the basic console instance to 
-execute composer and php commands to initiate your project.
-Just run `bin/dev console` in the root of this project.
+## Using composer without installing it locally
+This project includes a `console` container you can use to run commands with the php container/version applicable for your project.
+THis console can also be used to run composer if you don't have it installed locally or need it for a different PHP version.
+
+### Steps to use composer for the first initialization of your project
+- Clone this project:  
+  `git clone git@github.com:CyberSecutor/dockerWebStack.git`
+- Run the `console` container from the root of this project:  
+   `bin/dev console`
+- Navigate to your project and execute your composer command
+
+As soon as the docker-web-stack is installed you don't need this clone anymore.
+You can always start the console using `vendor/bin/dev console`
 
 ## Install the package ino your project
 - For now, it is only available as a VCS repository,
@@ -38,8 +56,3 @@ package globally for the current user.
 Ensure `docker-compose.yml` and `.env` are
 configured. Then start the environment with `dev up`.
 
-# Using composer without installing it locally
-
-The setup will include a console from where you can run composer 
-and PHP scripts without installing them locally.
-Use `vendor/bin/dev console` to start the console.

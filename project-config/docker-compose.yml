@@ -4,6 +4,8 @@ networks:
   backend:
 volumes:
   db-data:
+  es-data:
+  es-backups:
 
 x-custom:
   environment: &env-vars
@@ -21,7 +23,6 @@ x-custom:
     - MYSQL_PORT
 
 services:
-
   console:
     build: vendor/cybersecutor/docker-web-stack/src/console/${PHP_VERSION}
     user: "${CUID}:${CGID}"
@@ -106,3 +107,47 @@ services:
     image: redis:5.0-alpine
     networks:
       - backend
+
+  elasticsearch:
+    restart: on-failure
+    build:
+      context: vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/elasticsearch/
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - es-data:/usr/share/elasticsearch/data
+      - es-backups:/usr/share/elasticsearch/backups
+    environment:
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+    networks:
+      - backend
+
+  logstash:
+    restart: on-failure
+    image: docker.elastic.co/logstash/logstash-oss:6.2.4
+    volumes:
+      - ./vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/logstash/patterns:/opt/logstash/patterns:ro
+    ports:
+      - "6000:6000"
+      - "7000:7000"
+    environment:
+      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
+    networks:
+      - backend
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:6.2.4
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./vendor/cybersecutor/docker-web-stack/src/elasticsearch-elk/kibana/config/:/usr/share/kibana/config:ro
+    networks:
+      - backend
+    depends_on:
+      - elasticsearch
+
