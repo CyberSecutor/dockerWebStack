@@ -33,7 +33,7 @@ You can always start the console using `vendor/bin/dev console`
 - For now, it is only available as a VCS repository,
   `composer config repositories.CyberSecutor vcs https://github.com/CyberSecutor/dockerWebStack`
 - Install the package globally
-  `composer require cybersecutor/docker-web-stack`
+  `composer require --dev cybersecutor/docker-web-stack`
 - Run `vendor/bin/dev init` (or just `dev init` )
   This will install some project configuration files and a docker-compose.yml
 - Copy or add `.env.example` to `.env` or `.env.local` and change the settings as appropriate for your project.
