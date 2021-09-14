@@ -55,12 +55,12 @@ RUN apk add --no-cache \
         php7-sodium \
         php7-tokenizer \
         php7-xml \
-        php-xmlreader \
+        php7-xmlreader \
         php7-xmlwriter \
         php7-xsl \
         php7-zip \
         php7-zlib \
-    && pecl install 'xdebug-2.9.8' \
+        php7-pecl-xdebug \
     && apk del .build-deps \
     && rm -rf \
         /tmp/* \

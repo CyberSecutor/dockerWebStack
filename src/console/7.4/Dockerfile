@@ -101,8 +101,8 @@ RUN apt install -y \
         php-xmlreader \
         php-xmlwriter \
         php-xsl \
-        php-zip
-RUN pecl install 'xdebug-2.9.8' \
+        php-zip \
+        php-xdebug \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer --version=1.10.19 \
     && npm config set unsafe-perm true \
     && sudo apt autoremove -y \
