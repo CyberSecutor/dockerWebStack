@@ -1,6 +1,6 @@
 # vim:ts=4:sw=4:ai:et
 
-ARG UBUNTU_VERSION=latest
+ARG UBUNTU_VERSION=impish
 FROM ubuntu:${UBUNTU_VERSION}
 
 ARG LIBXDIFF_VERSION=0.23
